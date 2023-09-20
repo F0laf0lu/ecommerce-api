@@ -128,3 +128,6 @@ local_settings.py
 
 # production
 settings_production.py
+
+# custom
+notes.txt
