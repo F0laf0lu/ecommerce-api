@@ -131,3 +131,5 @@ settings_production.py
 
 # custom
 notes.txt
+products_data.sql
+category_data.sql
