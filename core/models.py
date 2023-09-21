@@ -25,7 +25,13 @@ class Cart(models.Model):
     created_at  = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self) -> str:
+        return f'{self.pk}'
+
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
+
+    def __str__(self) -> str:
+        return f'{self.product}'

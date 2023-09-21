@@ -11,6 +11,7 @@ from django.utils.html import format_html
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['title', 'products_total']
     search_fields = ['title']
+
     @admin.display(ordering='products_total')
     def products_total(self, category):
         url = reverse('admin:core_product_changelist') + '?' + f'category__id={category.pk}'
@@ -28,5 +29,24 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['price']
     search_fields = ['name', 'category__title']
 
-admin.site.register(Cart)
-admin.site.register(CartItem)
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [CartItemInline]
+    list_display = ['id', 'created_at']
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['product', 'quantity', 'product_cart']
+
+    def product_cart(self, cartitem):
+        cart = cartitem.cart
+        url = reverse('admin:core_cart_changelist') + '?' + f'cart__id={cart.id}'
+        return format_html (f'<a href="{url}">{cart.id}<a>')
+
+# admin.site.register(CartItem)
+# http://127.0.0.1:8000/admin/core/cart/?cart__id=1
