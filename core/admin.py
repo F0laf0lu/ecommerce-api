@@ -1,5 +1,7 @@
 from typing import Any
 from django.contrib import admin
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
 from django.urls import reverse
 from . models import Category, Product, Cart, CartItem
 from django.db.models import Count
@@ -36,7 +38,13 @@ class CartItemInline(admin.TabularInline):
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]
-    list_display = ['id', 'created_at']
+    list_display = ['id', 'product_count', 'created_at']
+
+    def product_count(self, cart):
+        return cart.product_count
+
+    def get_queryset(self, request) -> QuerySet[Any]:
+        return super().get_queryset(request).annotate(product_count = Count('cartitem'))
 
 
 @admin.register(CartItem)
@@ -47,6 +55,3 @@ class CartItemAdmin(admin.ModelAdmin):
         cart = cartitem.cart
         url = reverse('admin:core_cart_changelist') + '?' + f'cart__id={cart.id}'
         return format_html (f'<a href="{url}">{cart.id}<a>')
-
-# admin.site.register(CartItem)
-# http://127.0.0.1:8000/admin/core/cart/?cart__id=1

@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 
 # Create your models here.
@@ -22,6 +23,7 @@ class Product(models.Model):
         return f'{self.name} ; {self.category}'
     
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     created_at  = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
