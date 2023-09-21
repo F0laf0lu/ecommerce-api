@@ -107,15 +107,14 @@ myenv/
 
 Pipfile
 .DS_Store
-# *.sqlite3
+*.sqlite3
 *.pyc
 *.db
 *.pid
 .zip
-
 # django migrations 
-# **/migrations/**
-# !**/migrations
+**/migrations/**
+!**/migrations
 !**/migrations/__init__.py
 node_modules
 

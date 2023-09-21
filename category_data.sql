@@ -1,0 +1,10 @@
+insert into core_category (id, title, created_at) values (1, 'Electronics', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (2, 'Fashion', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (3, 'Gym & Fitness', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (4, 'Cosmetics and body care', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (5, 'Food and beverage', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (6, 'Video gaming products', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (7, 'Clothing & Apparel', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (8, 'Pet care', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (9, 'Footwear & Shoes', '2023-09-20 20:44:52.721740');
+insert into core_category (id, title, created_at) values (10, 'Health & Wellness', '2023-09-20 20:44:52.721740');
