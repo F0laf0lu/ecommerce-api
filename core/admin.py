@@ -20,7 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
         return format_html (f'<a href="{url}">{category.products_total}<a>')
     
     def get_queryset(self, request):
-        return super().get_queryset(request).annotate(products_total = Count('product'))
+        return super().get_queryset(request).annotate(products_total = Count('products'))
 
 
 @admin.register(Product)
@@ -30,7 +30,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 15
     list_editable = ['price']
     search_fields = ['name', 'category__title']
-
 
 class CartItemInline(admin.TabularInline):
     model = CartItem
