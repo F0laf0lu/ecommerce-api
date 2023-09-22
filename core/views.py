@@ -3,12 +3,12 @@ from . models import Product, Cart, Category, CartItem
 from . serializers import CategorySerializer, ProductSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django.db.models import Count
 
 # Create your views her
 
-class CategoryViewSet(ModelViewSet):
+class CategoryViewSet(ReadOnlyModelViewSet):
     queryset = Category.objects.annotate(products_count=Count('products')).all()
     serializer_class = CategorySerializer
     
@@ -22,7 +22,7 @@ class CategoryViewSet(ModelViewSet):
             'products': product_serializer.data
         }
         return Response(response_data)
-
+    
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
