@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from . models import Product, Cart, Category, CartItem
-from . serializers import CategorySerializer, ProductSerializer
+from . serializers import CategorySerializer, ProductSerializer, CartSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -27,3 +27,7 @@ class CategoryViewSet(ReadOnlyModelViewSet):
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+class CartViewSet(ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer

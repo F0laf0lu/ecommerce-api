@@ -16,3 +16,10 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'category', 'price']
 
     category = serializers.StringRelatedField()
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ['id', 'created_at']
+
+    id = serializers.UUIDField(read_only=True)
