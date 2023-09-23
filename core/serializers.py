@@ -13,9 +13,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'category', 'price']
-
-    category = serializers.StringRelatedField()
+        fields = ['id', 'name', 'description', 'category', 'price'] 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
