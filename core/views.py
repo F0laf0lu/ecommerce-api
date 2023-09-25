@@ -12,9 +12,10 @@ from django.db.models import Count
 # Create your views here
 
 class CategoryViewSet(ReadOnlyModelViewSet):
-    queryset = Category.objects.annotate(products_count=Count('products')).all()
+    queryset = Category.objects.annotate(products_count=Count('products')).all()    
+    queryset = queryset.order_by('id')
     serializer_class = CategorySerializer
-    
+
     # customize retrieve method to get products in a category
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -27,7 +28,7 @@ class CategoryViewSet(ReadOnlyModelViewSet):
         return Response(response_data)
     
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.order_by('id')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['category__title', 'name']
