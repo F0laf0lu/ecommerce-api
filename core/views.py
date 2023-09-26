@@ -7,6 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.exceptions import MethodNotAllowed
 from django.db.models import Count
 
 # Create your views here
@@ -36,7 +37,11 @@ class ProductViewSet(ModelViewSet):
     pagination_class = PageNumberPagination
     ordering_fields = ['category', 'name']
 
-
 class CartViewSet(ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+
+    print(serializer_class.validated_data)
+
+    # def list(self, request, *args, **kwargs):
+    #     raise MethodNotAllowed('GET')
