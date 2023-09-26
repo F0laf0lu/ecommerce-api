@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from core.filters import ProductFilter
 from . models import Product, Cart, Category, CartItem
-from . serializers import CategorySerializer, ProductSerializer, CartSerializer
+from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.exceptions import MethodNotAllowed
 from django.db.models import Count
 
@@ -37,11 +38,22 @@ class ProductViewSet(ModelViewSet):
     pagination_class = PageNumberPagination
     ordering_fields = ['category', 'name']
 
-class CartViewSet(ModelViewSet):
-    queryset = Cart.objects.all()
+class CartViewSet(CreateModelMixin, RetrieveModelMixin,DestroyModelMixin,GenericViewSet):
+    queryset = Cart.objects.prefetch_related('items').all()
     serializer_class = CartSerializer
 
-    print(serializer_class.validated_data)
+class CartItemViewSet(ModelViewSet):  
+    http_method_names =  ['get', 'post', 'patch', 'delete']  
+    def get_queryset(self):
+        queryset = CartItem.objects.filter(cart_id = self.kwargs['cart_pk'])
+        return queryset
+    
+    def get_serializer_context(self):
+        return {'cart_id':self.kwargs['cart_pk']}
 
-    # def list(self, request, *args, **kwargs):
-    #     raise MethodNotAllowed('GET')
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddItemToCartSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
+        return CartItemSerializer
