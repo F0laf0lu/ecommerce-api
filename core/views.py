@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from core.filters import ProductFilter
 from . models import Product, Cart, Category, CartItem
-from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UserSerializer
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -10,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.exceptions import MethodNotAllowed
 from django.db.models import Count
-
+from django.contrib.auth import get_user_model
 # Create your views here
 
 class CategoryViewSet(ReadOnlyModelViewSet):
@@ -57,3 +58,17 @@ class CartItemViewSet(ModelViewSet):
         elif self.request.method == 'PATCH':
             return UpdateCartItemSerializer
         return CartItemSerializer
+
+
+class UserViewSet(RetrieveModelMixin, CreateModelMixin, UpdateModelMixin ,GenericViewSet):
+    user = get_user_model()
+    queryset = user.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=False, methods=['GET','PUT'])
+    def me(self, request):
+        user = get_user_model()
+        user = user.objects.get(id=request.user.id)
+        serializer = UserSerializer(user) 
+        return Response(serializer.data)
+    

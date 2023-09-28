@@ -2,6 +2,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from core.models import Category, Product, Cart, CartItem
 from rest_framework import status
+from django.contrib.auth import get_user_model
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,3 +79,11 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields  = ['quantity']
+
+
+user = get_user_model()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = user
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
