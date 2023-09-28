@@ -1,6 +1,7 @@
 from decimal import Decimal
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from core.models import Category, Product, Cart, CartItem
+from core.models import Category, Product, Cart, CartItem, Order, OrderItem
 from rest_framework import status
 from django.contrib.auth import get_user_model
 
@@ -43,14 +44,6 @@ class CartSerializer(serializers.ModelSerializer):
     def get_cart_total(self, cart):
         return sum([item.quantity * item.product.price for item in cart.items.all()])
 
-    # def create(self, validated_data):
-    #     items_data = validated_data.pop('items')
-    #     cart = Cart.objects.create(**validated_data)
-    #     for item_data in items_data:
-    #         CartItem.objects.create(cart=cart, **item_data)
-    #     return cart
-
-
 class AddItemToCartSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField()
     
@@ -87,3 +80,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = user
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = SimpleProductSerializer()
+    class Meta:
+        model = OrderItem
+        fields = ["product", "quantity", "unit_price"]
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = ['id','placed_at', "payment_status", "customer", "items"]
+
+class CreateOrderSerializer(serializers.Serializer):
+    cart_id = serializers.UUIDField()
+
+    def save(self, **kwargs):
+        customer = user.objects.get(id=self.context['user_id'])
+        Order.objects.create(customer = customer)
+
+        

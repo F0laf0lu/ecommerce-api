@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from core.filters import ProductFilter
-from . models import Product, Cart, Category, CartItem
-from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UserSerializer
+from . models import Product, Cart, Category, CartItem, Order, OrderItem
+from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UserSerializer, OrderSerializer, CreateOrderSerializer
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -72,3 +72,19 @@ class UserViewSet(RetrieveModelMixin, CreateModelMixin, UpdateModelMixin ,Generi
         serializer = UserSerializer(user) 
         return Response(serializer.data)
     
+
+
+class OrderViewSet(ModelViewSet):
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        queryset = Order.objects.filter(customer = user_id)
+        return queryset
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        return OrderSerializer
+    
+    def get_serializer_context(self):
+        return {'user_id':self.request.user.id}
