@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from core.filters import ProductFilter
+from core.pagination import DefaultPagination
 from . models import Product, Cart, Category, CartItem, Order, OrderItem
 from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UpdateOrderSerializer, UserSerializer, OrderSerializer, CreateOrderSerializer
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
@@ -9,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import MethodNotAllowed
 from django.db.models import Count
 from django.contrib.auth import get_user_model
@@ -36,7 +38,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ['category__title', 'name']
     filterset_class = ProductFilter  
-    pagination_class = PageNumberPagination
+    pagination_class = DefaultPagination
     ordering_fields = ['category', 'name']
 
 class CartViewSet(CreateModelMixin, RetrieveModelMixin,DestroyModelMixin,GenericViewSet):
@@ -75,6 +77,9 @@ class UserViewSet(RetrieveModelMixin, CreateModelMixin, UpdateModelMixin ,Generi
 
 
 class OrderViewSet(ModelViewSet):
+
+    http_method_names = ['get','post','patch','delete','head']
+
     def create(self, request, *args, **kwargs):
         serializer = CreateOrderSerializer(data=request.data, context={'user_id':self.request.user.id})
         serializer.is_valid(raise_exception=True)
@@ -96,3 +101,8 @@ class OrderViewSet(ModelViewSet):
     
     def get_serializer_context(self):
         return {'user_id':self.request.user.id}
+    
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
