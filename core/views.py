@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from core.filters import ProductFilter
 from . models import Product, Cart, Category, CartItem, Order, OrderItem
-from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UserSerializer, OrderSerializer, CreateOrderSerializer
+from . serializers import CartItemSerializer, CategorySerializer, ProductSerializer, CartSerializer, AddItemToCartSerializer, UpdateCartItemSerializer, UpdateOrderSerializer, UserSerializer, OrderSerializer, CreateOrderSerializer
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -75,6 +75,13 @@ class UserViewSet(RetrieveModelMixin, CreateModelMixin, UpdateModelMixin ,Generi
 
 
 class OrderViewSet(ModelViewSet):
+    def create(self, request, *args, **kwargs):
+        serializer = CreateOrderSerializer(data=request.data, context={'user_id':self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        new_order = serializer.save()
+        serializer = OrderSerializer(new_order)
+        return Response(serializer.data)
+
     def get_queryset(self):
         user_id = self.request.user.id
         queryset = Order.objects.filter(customer = user_id)
@@ -83,6 +90,8 @@ class OrderViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateOrderSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateOrderSerializer
         return OrderSerializer
     
     def get_serializer_context(self):

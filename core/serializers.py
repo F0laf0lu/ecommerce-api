@@ -101,6 +101,15 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
+
+    def validate_cart_id(self, cart_id):
+        if not Cart.objects.filter(id=cart_id).exists():
+            raise serializers.ValidationError('Invalid Cartid')
+        if CartItem.objects.filter(cart_id=cart_id).count() == 0:
+            raise serializers.ValidationError('Cart is empty')
+        return cart_id
+    
+
     def save(self, **kwargs):
         with transaction.atomic():
             cart_id = self.validated_data['cart_id']
@@ -115,7 +124,11 @@ class CreateOrderSerializer(serializers.Serializer):
                 unit_price = item.product.price
             ) for item in cartitems
             ]
-
             OrderItem.objects.bulk_create(order_items)
-
             Cart.objects.filter(id=cart_id).delete()
+        return new_order
+    
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        field = ['payment_status']
