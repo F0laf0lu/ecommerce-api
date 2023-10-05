@@ -75,7 +75,6 @@ class UserViewSet(RetrieveModelMixin, CreateModelMixin, UpdateModelMixin ,Generi
 
 
 class OrderViewSet(ModelViewSet):
-
     def get_queryset(self):
         user_id = self.request.user.id
         queryset = Order.objects.filter(customer = user_id)
