@@ -132,3 +132,4 @@ settings_production.py
 # custom
 notes.txt
 ecommerce/settings.py
+ecommerce\settings.py
