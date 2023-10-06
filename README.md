@@ -17,3 +17,5 @@ Before running the project locally ensure you have the folloing installed:
 ### Installation Instructions
 
 1. Clone the repository
+
+    `git clone https://github.com/F0laf0lu/ecommerce-api.git`
